@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+
+	<!-- Servlets ====================================================== -->
+	<!-- Main Website Servlets -->
+	<servlet>
+		<servlet-name>Home</servlet-name>
+		<servlet-class>com.UBC513.A2.HomeServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>ReserveSeat</servlet-name>
+		<servlet-class>com.UBC513.A2.ReserveSeat</servlet-class>
+	</servlet>
+	
+	<!-- Helper Servlets -->
+	<servlet>
+		<servlet-name>FreeSeats</servlet-name>
+		<servlet-class>com.UBC513.A2.Helpers.FreeSeats</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>DeleteAll</servlet-name>
+		<servlet-class>com.UBC513.A2.Helpers.DeleteAll</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>Prep</servlet-name>
+		<servlet-class>com.UBC513.A2.Helpers.PrepServlet</servlet-class>
+	</servlet>
+	
+	<!-- Test Servlets -->	
+	<servlet>
+		<servlet-name>TestSeatReservation</servlet-name>
+		<servlet-class>com.UBC513.A2.Tests.TestSeatReservation</servlet-class>
+	</servlet>
+
+	<!-- Mappings ================================================================-->
+	<!-- Main Website Mappings -->
+	<servlet-mapping>
+		<servlet-name>Home</servlet-name>
+		<url-pattern>/Home</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ReserveSeat</servlet-name>
+		<url-pattern>/ReserveSeat</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Helper Mappings -->
+	<servlet-mapping>
+		<servlet-name>Prep</servlet-name>
+		<url-pattern>/Prep</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>DeleteAll</servlet-name>
+		<url-pattern>/DeleteAll</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>FreeSeats</servlet-name>
+		<url-pattern>/FreeSeats</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Test Mappings -->
+	<servlet-mapping>
+		<servlet-name>TestSeatReservation</servlet-name>
+		<url-pattern>/SeatReservation</url-pattern>
+	</servlet-mapping>	
+	
+	<welcome-file-list>
+		<welcome-file>Home</welcome-file>
+	</welcome-file-list>
+</web-app>
