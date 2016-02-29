@@ -17,6 +17,9 @@ import com.google.appengine.api.datastore.KeyFactory;
 public class TestSeatReservation extends HttpServlet {
 
 	static Random r = new Random();
+	
+	// Max number of retries
+	final static int maxRetries = 3;
 
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
@@ -39,13 +42,25 @@ public class TestSeatReservation extends HttpServlet {
 		// create seatID
 		String SeatID = String.format("%d%c", j, c);
 
-		try {
-			if (!Seat.ReserveSeat(FlightKey, SeatID, FirstName, LastName)) {
-				// Didn't reserve seat, o well, don't show errors for test
+		// Counter for retries
+		int retryCount = 0;
+		
+		while (retryCount < maxRetries) {
+			try {
+				if (!Seat.ReserveSeat(FlightKey, SeatID, FirstName, LastName)) {
+					// Didn't reserve seat, o well, don't show errors for test
+				}
+				break;
+			} catch (EntityNotFoundException e) {
+				// Assume this wont happen, as long as tester provides proper data.
+				retryCount++;
+				continue;
+			} catch (Exception e) {
+				retryCount++;
+				continue;
 			}
-		} catch (EntityNotFoundException e) {
-			// Assume this wont happen, as long as tester provides proper data.
 		}
 
 	}
+	
 }
