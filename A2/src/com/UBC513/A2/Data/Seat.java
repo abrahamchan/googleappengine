@@ -1,5 +1,8 @@
 package com.UBC513.A2.Data;
 
+import java.util.ConcurrentModificationException;
+import java.util.Random;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -12,6 +15,9 @@ import com.google.appengine.api.datastore.Transaction;
 
 //Helper class for flight seats.
 public class Seat {
+	
+	private static final int NUM_SHARDS = 1000;
+	private static final Random generator = new Random();
 
 	// Create a seat on a specific flight,
 	// @store = true, when you want to commit entity to the datastore
@@ -55,22 +61,39 @@ public class Seat {
 	public static boolean ReserveSeat(Key FlightKey, String SeatID,
 			String FirstName, String LastName) throws EntityNotFoundException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-
+		
+		int shardNum = generator.nextInt(NUM_SHARDS);
+		
 		Transaction tx = ds.beginTransaction();
-
+		
 		try {
-			Entity e = ds.get(tx,
-					KeyFactory.createKey(FlightKey, "Seat", SeatID));
-
-			if (e.getProperty("PersonSitting") != null)
-				return false;
-
-			e.setProperty("PersonSitting", FirstName + " " + LastName);
-			ds.put(tx, e);
-
-			return true;
-		} finally {
+			Key shardKey = new KeyFactory.Builder(FlightKey.toString(), Integer.toString(shardNum)).addChild("Seat",SeatID).getKey();
+			Entity shard;
+			
+			try { //If the sharding scheme exist, then put the value into it;
+				shard = ds.get(tx, shardKey);
+				if (shard.getProperty("PersonSitting") != null)
+					return false;
+				shard.setProperty("PersonSitting", FirstName + " " + LastName); 
+			} catch (EntityNotFoundException e) {
+				shard = new Entity(shardKey);
+                if (shard.getProperty("PersonSitting") != null)
+					return false;
+				shard.setProperty("PersonSitting", FirstName + " " + LastName);
+            }
+			ds.put(tx, shard);
 			tx.commit();
-		}
+			return true;
+			
+		} catch (ConcurrentModificationException e) {
+			System.out.println("You may need more shards. Consider adding more shards.");
+			throw new ConcurrentModificationException();
+        } finally {
+        	//restart to commit again if failed for transaction
+            if (tx.isActive()) {
+                tx.rollback();  
+            }
+        }
+		
 	}
 }
