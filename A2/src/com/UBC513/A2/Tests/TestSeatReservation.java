@@ -25,7 +25,7 @@ public class TestSeatReservation extends HttpServlet {
 			throws IOException, ServletException {
 
 		// Get parameters
-		Key FlightKey = KeyFactory.stringToKey(req.getParameter("FlightName"));
+		String FlightKey = req.getParameter("FlightName");
 		String FirstName = req.getParameter("FirstName");
 		String LastName = req.getParameter("LastName");
 
@@ -53,14 +53,13 @@ public class TestSeatReservation extends HttpServlet {
 				break;
 			} catch (EntityNotFoundException e) {
 				// Assume this wont happen, as long as tester provides proper data.
-				retryCount++;
-				continue;
+				break;
 			} catch (Exception e) {
 				retryCount++;
 				continue;
 			}
 		}
-
+		
 	}
 	
 }

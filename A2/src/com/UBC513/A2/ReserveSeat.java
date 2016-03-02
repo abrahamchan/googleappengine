@@ -32,7 +32,7 @@ public class ReserveSeat extends HttpServlet {
 			throws IOException, ServletException {
 
 		// Get parameters
-		Key FlightKey = KeyFactory.stringToKey(req.getParameter("FlightName"));
+		String FlightKey = req.getParameter("FlightName");
 		String SeatID = req.getParameter("SeatID");
 		String FirstName = req.getParameter("FirstName");
 		String LastName = req.getParameter("LastName");

@@ -1,7 +1,5 @@
 package com.UBC513.A2.Data;
 
-import java.util.ConcurrentModificationException;
-import java.util.Random;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -13,18 +11,20 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
 
+import java.io.UnsupportedEncodingException;
+import javax.xml.bind.DatatypeConverter;
+
+
 //Helper class for flight seats.
 public class Seat {
 	
-	private static final int NUM_SHARDS = 1000;
-	private static final Random generator = new Random();
-
 	// Create a seat on a specific flight,
 	// @store = true, when you want to commit entity to the datastore
 	// = false, when you want to commit entity later, like in a batch operation
-	public static Entity CreateSeat(String SeatID, Key FlightKey, boolean store) {
-		Entity e = new Entity("Seat", SeatID, FlightKey);
+	public static Entity CreateSeat(String SeatID, String FlightKey, boolean store) {
+		Entity e = new Entity("Seat", getSeatFlightStringKey(SeatID, FlightKey));
 		e.setProperty("PersonSitting", null);
+		e.setProperty("FlightKey", FlightKey);
 
 		if (store) {
 			DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
@@ -35,13 +35,14 @@ public class Seat {
 	}
 
 	// Frees specific seat(SeatID) on flight(FlightKey)
-	public static void FreeSeat(String SeatID, Key FlightKey) {
+	public static void FreeSeat(String SeatID, String FlightKey) {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
 		try {
-			Entity e = ds.get(KeyFactory.createKey(FlightKey, "Seat", SeatID));
+			Entity e = ds.get(KeyFactory.createKey("Seat", getSeatFlightStringKey(SeatID, FlightKey)));
 
 			e.setProperty("PersonSitting", null);
+
 			ds.put(e);
 		} catch (EntityNotFoundException e) {
 		}
@@ -50,50 +51,60 @@ public class Seat {
 	//Returns all free seats on a specific flight(FlightKey)
 	public static Iterable<Entity> GetFreeSeats(Key FlightKey) {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-//		Query q = new Query("Seat").setAncestor(FlightKey).addFilter(
-//				"PersonSitting", FilterOperator.EQUAL, null);
-		Query q = new Query("Seat").setAncestor(FlightKey).setFilter(new Query.FilterPredicate(
-				"PersonSitting", FilterOperator.EQUAL, null));
+
+		Query.Filter flightFilter = new Query.FilterPredicate(
+				"FlightKey", FilterOperator.EQUAL, FlightKey.getName());
+		
+		Query.Filter personFilter = new Query.FilterPredicate(
+				"PersonSitting", FilterOperator.EQUAL, null);
+		
+		Query.Filter validFilter = Query.CompositeFilterOperator.and(flightFilter, personFilter);
+		
+		Query q = new Query("Seat").setFilter(validFilter);
+		
 		return ds.prepare(q).asIterable();
 	}
 
 	//Reserves a specific seat(SeatID) on a specific flight(FlightKey)
-	public static boolean ReserveSeat(Key FlightKey, String SeatID,
-			String FirstName, String LastName) throws EntityNotFoundException {
+	public static boolean ReserveSeat(String FlightKey, String SeatID,
+			String FirstName, String LastName) throws EntityNotFoundException, UnsupportedEncodingException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
-		
-		int shardNum = generator.nextInt(NUM_SHARDS);
-		
+		Entity e;
+
 		Transaction tx = ds.beginTransaction();
-		
+
 		try {
-			Key shardKey = new KeyFactory.Builder(FlightKey.toString(), Integer.toString(shardNum)).addChild("Seat",SeatID).getKey();
-			Entity shard;
+			if (!SeatID.contains("-")) {
+				e = ds.get(tx, KeyFactory.createKey("Seat", getSeatFlightStringKey(SeatID, getFlightName(FlightKey))));
+			}
+			else {
+				e = ds.get(tx, KeyFactory.createKey("Seat", SeatID));
+			}
 			
-			try { //If the sharding scheme exist, then put the value into it;
-				shard = ds.get(tx, shardKey);
-				if (shard.getProperty("PersonSitting") != null)
-					return false;
-				shard.setProperty("PersonSitting", FirstName + " " + LastName); 
-			} catch (EntityNotFoundException e) {
-				shard = new Entity(shardKey);
-                if (shard.getProperty("PersonSitting") != null)
-					return false;
-				shard.setProperty("PersonSitting", FirstName + " " + LastName);
-            }
-			ds.put(tx, shard);
-			tx.commit();
+			if (e.getProperty("PersonSitting") != null)
+				return false;
+
+			e.setProperty("PersonSitting", FirstName + " " + LastName);
+			
+			ds.put(tx, e);
+
 			return true;
-			
-		} catch (ConcurrentModificationException e) {
-			System.out.println("You may need more shards. Consider adding more shards.");
-			throw new ConcurrentModificationException();
-        } finally {
-        	//restart to commit again if failed for transaction
-            if (tx.isActive()) {
-                tx.rollback();  
-            }
-        }
-		
+		} finally {
+			tx.commit();
+		}
 	}
+	
+	private static String getSeatFlightStringKey(String SeatID, String FlightKey) {
+		return SeatID + "-" + FlightKey;
+	}
+	
+	private static String getFlightName(String FlightKey) {
+	    String flightdecoded = decode(FlightKey);
+	    return flightdecoded.substring(flightdecoded.length()-6, flightdecoded.length()-1);
+	}
+	
+	private static String decode(String s) {
+	    return new String(DatatypeConverter.parseBase64Binary(s));
+	}
+	
 }
