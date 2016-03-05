@@ -1,6 +1,8 @@
 package com.UBC513.A2.Data;
 
 
+import javax.xml.bind.DatatypeConverter;
+
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -10,9 +12,6 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Transaction;
-
-import java.io.UnsupportedEncodingException;
-import javax.xml.bind.DatatypeConverter;
 
 
 //Helper class for flight seats.
@@ -67,30 +66,41 @@ public class Seat {
 
 	//Reserves a specific seat(SeatID) on a specific flight(FlightKey)
 	public static boolean ReserveSeat(String FlightKey, String SeatID,
-			String FirstName, String LastName) throws EntityNotFoundException, UnsupportedEncodingException {
+			String FirstName, String LastName) throws EntityNotFoundException {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		Entity e;
+		int retries = 3; // Default max number of retries
 
 		Transaction tx = ds.beginTransaction();
 
-		try {
-			if (!SeatID.contains("-")) {
-				e = ds.get(tx, KeyFactory.createKey("Seat", getSeatFlightStringKey(SeatID, getFlightName(FlightKey))));
+		while (true) {
+			try {
+				if (!SeatID.contains("-")) {
+					e = ds.get(tx, KeyFactory.createKey("Seat", getSeatFlightStringKey(SeatID, getFlightName(FlightKey))));
+				}
+				else {
+					e = ds.get(tx, KeyFactory.createKey("Seat", SeatID));
+				}
+				
+				if (e.getProperty("PersonSitting") != null)
+					return false;
+	
+				e.setProperty("PersonSitting", FirstName + " " + LastName);
+				
+				ds.put(tx, e);
+				
+				tx.commit();
+				return true;
+			} catch (Exception ex) {
+		        if (retries == 0) {
+		            return false;
+		        }
+		        retries--; // Decrement transaction retries
+			} finally {
+				if (tx.isActive()) {
+		            tx.rollback();
+		        }
 			}
-			else {
-				e = ds.get(tx, KeyFactory.createKey("Seat", SeatID));
-			}
-			
-			if (e.getProperty("PersonSitting") != null)
-				return false;
-
-			e.setProperty("PersonSitting", FirstName + " " + LastName);
-			
-			ds.put(tx, e);
-
-			return true;
-		} finally {
-			tx.commit();
 		}
 	}
 	
