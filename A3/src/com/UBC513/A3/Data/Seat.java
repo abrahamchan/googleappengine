@@ -98,38 +98,22 @@ public class Seat {
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		TransactionOptions options = TransactionOptions.Builder.withXG(true);
 		
-		LinkedHashMap<String, String> FlightSeatsMap = new LinkedHashMap<String, String>();
+		List<Pair<String, String>> FlightSeatsList = new ArrayList<Pair<String, String>>();
 		
-		//List<Map.Entry<Integer, String>> list = new ArrayList<>();
-		//list.add(new MapEntry<>(1, "foo"));
-		
-		FlightSeatsMap.put(Flight1, Flight1Seat);
-		FlightSeatsMap.put(Flight2, Flight2Seat);
-		FlightSeatsMap.put(Flight3, Flight3Seat);
-		FlightSeatsMap.put(Flight4, Flight4Seat);
-		
-		/*System.out.println(FlightSeatsMap.toString());
-		for (Map.Entry<String,String> flightEntry : FlightSeatsMap.entrySet()) {
-			System.out.println(flightEntry.getKey());
-			System.out.println(flightEntry.getValue());
-		}*/
-		
-		/*System.out.println(Flight1 + " " + Flight1Seat);
-		System.out.println(Flight2 + " " + Flight2Seat);
-		System.out.println(Flight3 + " " + Flight3Seat);
-		System.out.println(Flight4 + " " + Flight4Seat);*/
+		FlightSeatsList.add(new Pair<String, String>(Flight1, Flight1Seat));
+		FlightSeatsList.add(new Pair<String, String>(Flight2, Flight2Seat));
+		FlightSeatsList.add(new Pair<String, String>(Flight3, Flight3Seat));
+		FlightSeatsList.add(new Pair<String, String>(Flight4, Flight4Seat));
 
 		
 		for (int i = 0; i < 10; i++) {
 			Transaction tx = ds.beginTransaction(options);
 			try {
-				for (Map.Entry<String,String> flightEntry : FlightSeatsMap.entrySet()) {
-					Entity e = ds.get(tx, KeyFactory.createKey(flightEntry.getKey(), flightEntry.getValue()));
-					
-					System.out.println(e.getProperty("PersonSitting"));
+				for (Pair flightEntry : FlightSeatsList) {
+					Entity e = ds.get(tx, KeyFactory.createKey( (String) flightEntry.getLeft(), (String) flightEntry.getRight() ));
 	
 					if (e.getProperty("PersonSitting") != null) {
-						//SeatReservation.CreateReservation(Flight1, Flight1Seat, Flight2, Flight2Seat, Flight3, Flight3Seat, Flight4, Flight4Seat, FirstName, LastName, true);
+						SeatReservation.CreateReservation(Flight1, Flight1Seat, Flight2, Flight2Seat, Flight3, Flight3Seat, Flight4, Flight4Seat, FirstName, LastName, true);
 						return false;
 					}
 	

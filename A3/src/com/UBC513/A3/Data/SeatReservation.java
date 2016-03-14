@@ -65,4 +65,10 @@ public class SeatReservation {
 		Query q = new Query("SeatReservation").addSort( "date", SortDirection.ASCENDING);
 		return ds.prepare(q).asIterable();
 	}
+	
+	// Remove reservation from the datastore
+	public static void DeleteReservation(Entity e) {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		ds.delete(e.getKey());
+	}
 }

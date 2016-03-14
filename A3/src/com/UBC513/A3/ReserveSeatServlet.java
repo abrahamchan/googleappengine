@@ -45,7 +45,7 @@ public class ReserveSeatServlet extends HttpServlet {
 					Flight3Seat, Flight4, Flight4Seat,
 					FirstName, LastName)) {
 				// seat not reserved, show error page
-				forwardTo = "/reserveSeatError.jsp";
+				forwardTo = "/reserveSeatWaiting.jsp";
 			}
 		} catch (EntityNotFoundException e) {
 			// seat not found, show error page
