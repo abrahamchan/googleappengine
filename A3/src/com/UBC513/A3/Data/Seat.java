@@ -1,6 +1,10 @@
 package com.UBC513.A3.Data;
 
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -51,6 +55,13 @@ public class Seat {
 				FilterOperator.EQUAL, null);
 		return ds.prepare(q).asIterable();
 	}
+	
+	// Returns all seats on a specific flight(FlightKey)
+	public static Iterable<Entity> GetSeats(String FlightName) {
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		Query q = new Query(FlightName);
+		return ds.prepare(q).asIterable();
+	}
 
 	// Reserves a specific seat(SeatID) on a specific flight(FlightKey)
 	public static boolean ReserveSeat(String FlightName, String SeatID,
@@ -83,7 +94,58 @@ public class Seat {
 			String Flight2, String Flight2Seat, String Flight3,
 			String Flight3Seat, String Flight4, String Flight4Seat,
 			String FirstName, String LastName) throws Exception {
+		
+		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
+		TransactionOptions options = TransactionOptions.Builder.withXG(true);
+		
+		LinkedHashMap<String, String> FlightSeatsMap = new LinkedHashMap<String, String>();
+		
+		//List<Map.Entry<Integer, String>> list = new ArrayList<>();
+		//list.add(new MapEntry<>(1, "foo"));
+		
+		FlightSeatsMap.put(Flight1, Flight1Seat);
+		FlightSeatsMap.put(Flight2, Flight2Seat);
+		FlightSeatsMap.put(Flight3, Flight3Seat);
+		FlightSeatsMap.put(Flight4, Flight4Seat);
+		
+		/*System.out.println(FlightSeatsMap.toString());
+		for (Map.Entry<String,String> flightEntry : FlightSeatsMap.entrySet()) {
+			System.out.println(flightEntry.getKey());
+			System.out.println(flightEntry.getValue());
+		}*/
+		
+		/*System.out.println(Flight1 + " " + Flight1Seat);
+		System.out.println(Flight2 + " " + Flight2Seat);
+		System.out.println(Flight3 + " " + Flight3Seat);
+		System.out.println(Flight4 + " " + Flight4Seat);*/
 
-		throw new Exception("Not Implemented");
+		
+		for (int i = 0; i < 10; i++) {
+			Transaction tx = ds.beginTransaction(options);
+			try {
+				for (Map.Entry<String,String> flightEntry : FlightSeatsMap.entrySet()) {
+					Entity e = ds.get(tx, KeyFactory.createKey(flightEntry.getKey(), flightEntry.getValue()));
+					
+					System.out.println(e.getProperty("PersonSitting"));
+	
+					if (e.getProperty("PersonSitting") != null) {
+						//SeatReservation.CreateReservation(Flight1, Flight1Seat, Flight2, Flight2Seat, Flight3, Flight3Seat, Flight4, Flight4Seat, FirstName, LastName, true);
+						return false;
+					}
+	
+					e.setProperty("PersonSitting", FirstName + " " + LastName);
+					ds.put(tx, e);
+				}
+				
+				tx.commit();
+				return true;
+			} catch (ConcurrentModificationException e) {
+				// continue
+			} finally {
+				if (tx.isActive())
+					tx.rollback();
+			}
+		}
+		throw new ConcurrentModificationException();
 	}
 }

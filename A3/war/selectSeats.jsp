@@ -22,20 +22,59 @@
 			<div id="MainContent">
 
 				<% 
-				Iterable<Entity> flightSeats = (Iterable<Entity>)request.getAttribute("flightSeats");
+				Iterable<Entity> flightSeats1 = (Iterable<Entity>)request.getAttribute("flightSeats1");
+				Iterable<Entity> flightSeats2 = (Iterable<Entity>)request.getAttribute("flightSeats2");
+				Iterable<Entity> flightSeats3 = (Iterable<Entity>)request.getAttribute("flightSeats3");
+				Iterable<Entity> flightSeats4 = (Iterable<Entity>)request.getAttribute("flightSeats4");
 				%>
 				
 				<form action="ReserveSeat" method="post">
 				
-				<input type="hidden" name="Flight" value="<%=request.getParameter("Flight") %>"/>
+				<input type="hidden" name="Flight1" value="<%=request.getParameter("Flight1") %>"/>
+				<input type="hidden" name="Flight2" value="<%=request.getParameter("Flight2") %>"/>
+				<input type="hidden" name="Flight3" value="<%=request.getParameter("Flight3") %>"/>
+				<input type="hidden" name="Flight4" value="<%=request.getParameter("Flight4") %>"/>
 				
 				<table>
 					<tr>
-						<td><%=request.getParameter("Flight")%></td>
+						<td><%=request.getParameter("Flight1")%></td>
 						<td>
-							<select name="SeatID">
+							<select name="SeatID1">
 								<option value="">Please select a seat.</option>
-							<% for( Entity e : flightSeats ) { %>
+							<% for( Entity e : flightSeats1 ) { %>
+								<option><%=e.getKey().getName() %></option>
+							<%} %>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><%=request.getParameter("Flight2")%></td>
+						<td>
+							<select name="SeatID2">
+								<option value="">Please select a seat.</option>
+							<% for( Entity e : flightSeats2 ) { %>
+								<option><%=e.getKey().getName() %></option>
+							<%} %>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><%=request.getParameter("Flight3")%></td>
+						<td>
+							<select name="SeatID3">
+								<option value="">Please select a seat.</option>
+							<% for( Entity e : flightSeats3 ) { %>
+								<option><%=e.getKey().getName() %></option>
+							<%} %>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td><%=request.getParameter("Flight4")%></td>
+						<td>
+							<select name="SeatID4">
+								<option value="">Please select a seat.</option>
+							<% for( Entity e : flightSeats4 ) { %>
 								<option><%=e.getKey().getName() %></option>
 							<%} %>
 							</select>

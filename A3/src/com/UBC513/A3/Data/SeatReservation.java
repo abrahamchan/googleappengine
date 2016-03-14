@@ -2,8 +2,6 @@ package com.UBC513.A3.Data;
 
 import java.util.Date;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;

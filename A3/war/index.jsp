@@ -27,12 +27,49 @@
 				<table>
 					<tr>
 						<td>&nbsp;</td>
-						<td><strong>Trip</strong></td>
+						<td><strong>To Trip</strong></td>
 					</tr>
 					<tr>
 						<td>Flight</td>
 						<td>
-							<select name="Flight">
+							<select name="Flight1">
+								<option value="">Please select a flight.</option>
+							<% for( Entity e : list ) { %>
+								<option value="<%=e.getKey().getName()%>"><%=e.getKey().getName() %></option>
+							<%} %>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Flight</td>
+						<td>
+							<select name="Flight2">
+								<option value="">Please select a flight.</option>
+							<% for( Entity e : list ) { %>
+								<option value="<%=e.getKey().getName()%>"><%=e.getKey().getName() %></option>
+							<%} %>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td><strong>Return Trip</strong></td>
+					</tr>
+					<tr>
+						<td>Flight</td>
+						<td>
+							<select name="Flight3">
+								<option value="">Please select a flight.</option>
+							<% for( Entity e : list ) { %>
+								<option value="<%=e.getKey().getName()%>"><%=e.getKey().getName() %></option>
+							<%} %>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Flight</td>
+						<td>
+							<select name="Flight4">
 								<option value="">Please select a flight.</option>
 							<% for( Entity e : list ) { %>
 								<option value="<%=e.getKey().getName()%>"><%=e.getKey().getName() %></option>
