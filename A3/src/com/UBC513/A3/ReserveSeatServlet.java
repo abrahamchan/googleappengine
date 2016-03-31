@@ -38,14 +38,23 @@ public class ReserveSeatServlet extends HttpServlet {
 		String FirstName = req.getParameter("FirstName");
 		String LastName = req.getParameter("LastName");
 		
+		boolean Add2Waitlist = req.getParameter("waitList") != null;
+		
 		String forwardTo = "/seatConfirmation.jsp";
 		try {
 			if (!Seat.ReserveSeats(Flight1, Flight1Seat,
 					Flight2, Flight2Seat, Flight3,
 					Flight3Seat, Flight4, Flight4Seat,
 					FirstName, LastName)) {
-				// seat not reserved, show error page
-				forwardTo = "/reserveSeatWaiting.jsp";
+				SeatReservation.CreateReservation(Flight1, Flight1Seat, Flight2, Flight2Seat, Flight3, Flight3Seat, Flight4, Flight4Seat, FirstName, LastName, Add2Waitlist);
+				
+				if (Add2Waitlist) {
+					// seat not reserved, show waiting page
+					forwardTo = "/reserveSeatWaiting.jsp";
+				} else {
+					// seat not reserved, show error page
+					forwardTo = "/reserveSeatError.jsp";
+				}
 			}
 		} catch (EntityNotFoundException e) {
 			// seat not found, show error page

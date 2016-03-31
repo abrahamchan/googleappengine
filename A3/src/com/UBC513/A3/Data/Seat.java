@@ -113,7 +113,6 @@ public class Seat {
 					Entity e = ds.get(tx, KeyFactory.createKey( (String) flightEntry.getLeft(), (String) flightEntry.getRight() ));
 	
 					if (e.getProperty("PersonSitting") != null) {
-						SeatReservation.CreateReservation(Flight1, Flight1Seat, Flight2, Flight2Seat, Flight3, Flight3Seat, Flight4, Flight4Seat, FirstName, LastName, true);
 						return false;
 					}
 	
