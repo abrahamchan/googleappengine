@@ -32,6 +32,9 @@ public class Worker {
 						FirstName, LastName)) {
 					// waitlist seat reserved
 					
+					// Message logs if waitlist is triggered and reservation is successful
+					System.out.println(FirstName + " " + LastName + "'s flights have been booked in the waitlist!");
+					
 					SeatReservation.DeleteReservation(e);
 				}
 			} catch (EntityNotFoundException ex) {
