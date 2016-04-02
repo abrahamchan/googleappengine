@@ -58,22 +58,22 @@ public class Checkpoint {
 			String LastName = (String) e.getProperty("LastName");
 			
 			try {
-				if (Seat.ReserveSeats(Flight1, Flight1Seat,
+				Seat.ReserveSeats(Flight1, Flight1Seat,
 						Flight2, Flight2Seat, Flight3,
 						Flight3Seat, Flight4, Flight4Seat,
-						FirstName, LastName)) {
-					// waitlist seat reserved
+						FirstName, LastName);
+					// ReserveSeat resumes
+				
+				DeleteReserveSeatTask();
 					
-					// Message logs if checkpoint is triggered
-					System.out.println("Checkpoint ReserveSeat has been re-executed");
+				// Message logs if checkpoint is triggered
+				System.out.println("Checkpoint ReserveSeat has been re-executed");
 					
-					DeleteReserveSeatTask();
-				}
 			} catch (Exception ex) {
 				// TODO Auto-generated catch block
 				ex.printStackTrace();
 			}
-			
+
 		}
 	}
 	
