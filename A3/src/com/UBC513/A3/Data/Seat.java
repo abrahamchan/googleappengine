@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.UBC513.A3.Helpers.Checkpoint;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -95,6 +96,11 @@ public class Seat {
 			String Flight3Seat, String Flight4, String Flight4Seat,
 			String FirstName, String LastName) throws Exception {
 		
+		Checkpoint.CreateReserveSeatTask(Flight1, Flight1Seat,
+				Flight2, Flight2Seat, Flight3,
+				Flight3Seat, Flight4, Flight4Seat,
+				FirstName, LastName);
+		
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 		TransactionOptions options = TransactionOptions.Builder.withXG(true);
 		
@@ -105,6 +111,8 @@ public class Seat {
 		FlightSeatsList.add(new Pair<String, String>(Flight3, Flight3Seat));
 		FlightSeatsList.add(new Pair<String, String>(Flight4, Flight4Seat));
 
+		
+		//System.exit(0);
 		
 		for (int i = 0; i < 10; i++) {
 			Transaction tx = ds.beginTransaction(options);
@@ -121,6 +129,9 @@ public class Seat {
 				}
 				
 				tx.commit();
+				
+				Checkpoint.DeleteReserveSeatTask();
+				
 				return true;
 			} catch (ConcurrentModificationException e) {
 				// continue
