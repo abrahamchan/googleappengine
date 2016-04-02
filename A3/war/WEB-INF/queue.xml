@@ -5,4 +5,8 @@
     <name>default</name>
     <rate>1/s</rate>
   </queue>
+  <queue>
+    <name>checkpoint</name>
+    <rate>1/s</rate>
+  </queue>
 </queue-entries>

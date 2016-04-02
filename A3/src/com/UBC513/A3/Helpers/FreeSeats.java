@@ -18,6 +18,9 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Method;
+
 import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
 
 @SuppressWarnings("serial")
@@ -25,6 +28,14 @@ public class FreeSeats extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
 
+		try {
+			Checkpoint.CreateFreeSeatsTask();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//System.exit(0);
 		DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
 		List<Entity> l = new ArrayList<Entity>();
@@ -48,8 +59,13 @@ public class FreeSeats extends HttpServlet {
 		// put seats back into datastore
 		ds.put(l);
 		
+		//Remove method from checkpoint queue
+		Checkpoint.DeleteFreeSeatsTask();
+		
 		//create task to retry reservations from waiting list
-
+        Queue queue = QueueFactory.getDefaultQueue();
+        queue.add(TaskOptions.Builder.withUrl("/worker"));
+        
 		// redirect to freeSeats.jsp
 		ServletContext sc = getServletContext();
 		RequestDispatcher rd = sc.getRequestDispatcher("/FreeSeats.jsp");

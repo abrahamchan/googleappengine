@@ -10,9 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.UBC513.A3.Data.Flight;
+import com.UBC513.A3.Helpers.Checkpoint;
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
 import com.google.appengine.api.taskqueue.TaskOptions;
+import com.google.appengine.api.taskqueue.TaskOptions.Method;
 
 @SuppressWarnings("serial")
 public class HomeServlet extends HttpServlet {
@@ -21,10 +23,9 @@ public class HomeServlet extends HttpServlet {
 
 		//Get all flights in datastore
 		req.setAttribute("flights", Flight.GetFlights());
-		
-		// Add the task to the default queue.
-        Queue queue = QueueFactory.getDefaultQueue();
-        queue.add(TaskOptions.Builder.withUrl("/worker"));
+        
+		//Check for to-do tasks in the checkpoint queue
+        Checkpoint.Process();
 		
 		//redirect to index.jsp
 		ServletContext sc = getServletContext();
