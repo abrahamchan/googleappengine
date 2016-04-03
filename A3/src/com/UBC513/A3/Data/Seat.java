@@ -118,7 +118,14 @@ public class Seat {
 			Transaction tx = ds.beginTransaction(options);
 			try {
 				for (Pair flightEntry : FlightSeatsList) {
-					Entity e = ds.get(tx, KeyFactory.createKey( (String) flightEntry.getLeft(), (String) flightEntry.getRight() ));
+					String flight = (String) flightEntry.getLeft();
+					String seat = (String) flightEntry.getRight();
+					
+					if (flight.isEmpty() || seat.isEmpty()) {
+						continue;
+					}
+					
+					Entity e = ds.get(tx, KeyFactory.createKey( flight, seat ));
 	
 					if (e.getProperty("PersonSitting") != null) {
 						return false;

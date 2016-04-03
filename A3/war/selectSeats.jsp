@@ -37,47 +37,63 @@
 				
 				<table>
 					<tr>
-						<td><%=request.getParameter("Flight1")%></td>
+						<td>&nbsp;</td>
+						<td><strong>To Trip</strong></td>
+					</tr>
+					<tr>
+						<td><%String flight=request.getParameter("Flight1");%><%=flight%></td>
 						<td>
-							<select name="SeatID1">
-								<option value="">Please select a seat.</option>
-							<% for( Entity e : flightSeats1 ) { %>
-								<option><%=e.getKey().getName() %></option>
+							<%if (!flight.isEmpty()) { %>
+								<select name="SeatID1">
+									<option value="">Please select a seat.</option>
+								<% for( Entity e : flightSeats1 ) { %>
+									<option><%=e.getKey().getName() %></option>
+								<%} %>
+								</select>
 							<%} %>
-							</select>
 						</td>
 					</tr>
 					<tr>
-						<td><%=request.getParameter("Flight2")%></td>
+						<td><%flight=request.getParameter("Flight2");%><%=flight%></td>
 						<td>
-							<select name="SeatID2">
-								<option value="">Please select a seat.</option>
-							<% for( Entity e : flightSeats2 ) { %>
-								<option><%=e.getKey().getName() %></option>
+							<%if (!flight.isEmpty()) { %>
+								<select name="SeatID2">
+									<option value="">Please select a seat.</option>
+								<% for( Entity e : flightSeats2 ) { %>
+									<option><%=e.getKey().getName() %></option>
+								<%} %>
+								</select>
 							<%} %>
-							</select>
 						</td>
 					</tr>
 					<tr>
-						<td><%=request.getParameter("Flight3")%></td>
+						<td>&nbsp;</td>
+						<td><strong>Return Trip</strong></td>
+					</tr>
+					<tr>
+						<td><%flight=request.getParameter("Flight3");%><%=flight%></td>
 						<td>
-							<select name="SeatID3">
-								<option value="">Please select a seat.</option>
-							<% for( Entity e : flightSeats3 ) { %>
-								<option><%=e.getKey().getName() %></option>
+							<%if (!flight.isEmpty()) { %>
+								<select name="SeatID3">
+									<option value="">Please select a seat.</option>
+								<% for( Entity e : flightSeats3 ) { %>
+									<option><%=e.getKey().getName() %></option>
+								<%} %>
+								</select>
 							<%} %>
-							</select>
 						</td>
 					</tr>
 					<tr>
-						<td><%=request.getParameter("Flight4")%></td>
+						<td><%flight=request.getParameter("Flight4");%><%=flight%></td>
 						<td>
-							<select name="SeatID4">
-								<option value="">Please select a seat.</option>
-							<% for( Entity e : flightSeats4 ) { %>
-								<option><%=e.getKey().getName() %></option>
+							<%if (!flight.isEmpty()) { %>
+								<select name="SeatID4">
+									<option value="">Please select a seat.</option>
+								<% for( Entity e : flightSeats4 ) { %>
+									<option><%=e.getKey().getName() %></option>
+								<%} %>
+								</select>
 							<%} %>
-							</select>
 						</td>
 					</tr>
 					<tr>
